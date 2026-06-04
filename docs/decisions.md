@@ -40,13 +40,13 @@ Resultado: JSONL para raw. CSV para processed (compatibilidad analítica máxima
 
 Decision: script Python (process_events.py) lee JSONL y escribe JSON filtrado.
 
-Contexto: necesitamos separar los eventos de signup del resto para análisis.
+Contexto: necesitamos filtrar un subconjunto de eventos GitHub Archive para análisis.
 El script es reproducible: misma entrada, misma salida, sin efectos secundarios.
 
 Tradeoff: un script por transformación vs una sola función general.
 Elegimos un script por transformación: más legible, más fácil de testear.
 
-Resultado: process_events.py → data/processed/signups.json
+Resultado: process_events.py → data/processed/push_events.json (filtra PushEvent)
 
 ### 002 - Entorno de desarrollo
 
