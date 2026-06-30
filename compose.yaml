@@ -91,7 +91,33 @@ services:
       timeout: 10s
       retries: 5
 
+  # SPIKE multi-cloud — clonar con .devcontainer/setup-multicloud.sh
+  # Si no están los repos en vendor/, este build falla con mensaje claro.
+  gcp-emulator:
+    build:
+      context: ./vendor/gcp-emulator
+    container_name: cloud-foundations-gcp
+    ports:
+      - "8443:8443"
+    volumes:
+      - gcp-data:/data
+    profiles:
+      - multicloud
+
+  azure-emulator:
+    build:
+      context: ./vendor/azure-emulator
+    container_name: cloud-foundations-azure
+    ports:
+      - "10000:10000"
+    volumes:
+      - azure-data:/data
+    profiles:
+      - multicloud
+
 volumes:
   postgres-data:
   minio-data:
   localstack-data:
+  gcp-data:
+  azure-data:

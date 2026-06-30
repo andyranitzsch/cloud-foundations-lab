@@ -7,17 +7,19 @@
     "ghcr.io/devcontainers/features/aws-cli:1": {}
   },
 
-  "postCreateCommand": "python3 -m pip install -r requirements.txt && cp .env.example .env",
-  "postStartCommand": "docker compose up -d",
+  "postCreateCommand": "bash .devcontainer/setup-multicloud.sh && python3 -m pip install -r requirements.txt && cp .env.example .env",
+  "postStartCommand": "docker compose up -d --build gcp-emulator azure-emulator && docker compose up -d",
 
-  "forwardPorts": [5432, 9000, 9001, 6379, 9092, 4566],
+  "forwardPorts": [5432, 9000, 9001, 6379, 9092, 4566, 8443, 10000],
   "portsAttributes": {
     "5432": { "label": "PostgreSQL" },
     "9000": { "label": "MinIO API" },
     "9001": { "label": "MinIO Console" },
     "6379": { "label": "Redis" },
     "9092": { "label": "Redpanda" },
-    "4566": { "label": "LocalStack" }
+    "4566": { "label": "LocalStack (AWS)" },
+    "8443": { "label": "GCP emulator" },
+    "10000": { "label": "Azure emulator" }
   },
 
   "customizations": {
