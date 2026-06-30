@@ -1,0 +1,39 @@
+# Hooks que corren antes de cada commit.
+#
+# Instalación (una vez por desarrollador):
+#   pip install pre-commit
+#   pre-commit install
+#
+# Correr manualmente sobre todos los archivos:
+#   pre-commit run --all-files
+
+repos:
+  # Higiene básica de archivos
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+        args: ["--maxkb=2000"]   # data CSV de Olist puede ser grande
+      - id: check-merge-conflict
+
+  # Python: ruff (lint + format, super rápido)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.7.4
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+      - id: ruff-format
+
+  # Terraform / OpenTofu: fmt + validate por stack
+  # Usamos el hook genérico de terraform-pre-commit-hooks (también vale para tofu)
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.96.1
+    hooks:
+      - id: terraform_fmt
+      - id: terraform_validate
+        args:
+          - --tf-init-args=-backend=false

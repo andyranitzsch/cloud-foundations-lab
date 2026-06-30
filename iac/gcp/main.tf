@@ -44,7 +44,7 @@ provider "google" {
 resource "google_storage_bucket" "app" {
   name          = var.bucket_name
   location      = "US"
-  force_destroy = true   # permite tofu destroy con objetos adentro
+  force_destroy = true # permite tofu destroy con objetos adentro
 
   versioning {
     enabled = true

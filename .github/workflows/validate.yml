@@ -11,36 +11,36 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Validate compose
-        run: docker compose config
+        run: docker compose config > /dev/null
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - name: Install Python deps
-        run: pip install -r requirements.txt
+        run: pip install -r requirements.txt ruff
+
+      - name: Lint Python (ruff)
+        run: ruff check scripts/ tests/ || true   # warning-only por ahora
 
       - name: Validate Python syntax
-        run: |
-          for script in \
-            scripts/process_events.py \
-            scripts/upload_to_object_storage.py \
-            scripts/load_postgres.py \
-            scripts/query_analytics.py \
-            scripts/produce_sqs.py \
-            scripts/consume_sqs.py \
-            scripts/produce_kafka.py \
-            scripts/consume_kafka.py; do
-            python -m py_compile "$script"
-          done
+        run: python -m compileall scripts/ tests/
 
-      - name: Validate Terraform/OpenTofu
+      - name: Run unit tests
+        run: pytest -q
+
+      - name: Set up OpenTofu
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: "1.8.4"
+
+      - name: Tofu fmt (check)
+        run: tofu fmt -check -recursive -diff iac/
+
+      - name: Tofu validate (per stack)
         run: |
-          if command -v terraform &>/dev/null; then
-            cd infra/terraform && terraform fmt -check && terraform validate
-          elif command -v tofu &>/dev/null; then
-            cd infra/terraform && tofu fmt -check && tofu validate
-          else
-            echo "terraform/opentofu no disponible en este runner, se omite"
-          fi
+          for stack in iac/aws iac/gcp iac/azure; do
+            echo "=== Validando $stack ==="
+            (cd "$stack" && tofu init -backend=false -input=false -no-color && tofu validate -no-color)
+          done

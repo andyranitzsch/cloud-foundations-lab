@@ -45,8 +45,8 @@ resource "aws_s3_bucket" "app" {
   bucket = var.bucket_name
 
   tags = {
-    Lab     = "09"
-    Project = var.project_name
+    Lab       = "09"
+    Project   = var.project_name
     ManagedBy = "OpenTofu"
   }
 }
